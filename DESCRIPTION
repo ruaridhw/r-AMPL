@@ -1,0 +1,10 @@
+Package: AMPL
+Type: Package
+Title: AMPL to R API
+Version: 0.0.9000
+Author: Ruaridh Williamson
+Maintainer: Ruaridh Williamson <ruaridh.williamson@gmail.com>
+Description: Provides convenience wrappers around amplpy using reticulate
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
