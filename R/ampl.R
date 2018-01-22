@@ -19,6 +19,6 @@ evaluate <- function(ampl, amplstatements) {
 }
 
 #' @export
-set_objective <- function(ampl, objective) {
+use_objective <- function(ampl, objective) {
   evaluate(ampl, paste0('objective ', objective, ';'))
 }
