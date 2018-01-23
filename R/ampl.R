@@ -44,9 +44,13 @@ set_solver <- function(ampl, solver_path) {
 #'
 #' @name read
 #' @export
-read_model <- function(ampl, fileName) {
+read <- function(ampl, fileName) {
   call_python(ampl, "read", fileName)
 }
+
+#' @rdname read
+#' @export
+read_model <- read
 
 #' @rdname read
 #' @export

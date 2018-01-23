@@ -6,6 +6,8 @@
 \alias{read_data}
 \title{Read}
 \usage{
+read(ampl, fileName)
+
 read_model(ampl, fileName)
 
 read_data(ampl, fileName)
