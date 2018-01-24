@@ -99,3 +99,20 @@ evaluate <- function(ampl, amplstatements) {
 use_objective <- function(ampl, objective) {
   evaluate(ampl, paste0('objective ', objective, ';'))
 }
+#' @importFrom reticulate iterate
+#' @importFrom purrr map map_chr
+#' @export
+get_names_all <- function(ampl,
+                               entity_type = c("Sets", "Parameters", "Variables")) {
+  stopifnot(entity_type %in% c("Sets", "Parameters", "Variables"))
+
+  entity_list <- lapply(entity_type, function(x) {
+    call_python(ampl, sprintf("get%s", x)) %>% reticulate::iterate()
+  })
+  names(entity_list) <- entity_type
+
+  purrr::map(entity_list, function(x) {purrr::map_chr(x, `[[`, 1)})
+}
+
+
+
