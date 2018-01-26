@@ -113,6 +113,11 @@ use_objective <- function(ampl, objective) {
   evaluate(ampl, paste0('objective ', objective, ';'))
 }
 
+#' @export
+solve_model <- function(ampl) {
+  call_python(ampl, "solve")
+}
+
 #' Display
 #'
 #' Low-level function equivalent to the AMPL call
