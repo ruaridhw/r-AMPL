@@ -152,7 +152,7 @@ display <- function(ampl, entity) {
 }
 
 #' @export
-get_data <- function(ampl, entity) {
+get_entity <- function(ampl, entity) {
   dt <- display(ampl, entity)
   e <- call_python(ampl, "getEntity", entity)
   names(dt) <- if (e$isScalar()) {
@@ -161,6 +161,15 @@ get_data <- function(ampl, entity) {
     c(e$getIndexingSets(), entity)
   }
   dt
+}
+
+#' @export
+get_data <- function(ampl, entity) {
+  if (length(entity) == 1) {
+    return(get_entity(ampl, entity))
+  }
+  names(entity) <- entity
+  purrr::map(entity, ~ get_entity(ampl, .x))
 }
 
 #' @export
