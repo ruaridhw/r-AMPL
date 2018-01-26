@@ -99,19 +99,94 @@ evaluate <- function(ampl, amplstatements) {
 use_objective <- function(ampl, objective) {
   evaluate(ampl, paste0('objective ', objective, ';'))
 }
-#' @importFrom reticulate iterate
-#' @importFrom purrr map map_chr
+
+#' Display
+#'
+#' Low-level function equivalent to the AMPL call
+#'
+#' `display ds1, ..., dsn;`
+#'
+#' where `ds1, ..., dsn` are given as the parameter `statements` here.
+#'
+#' @inheritParams read
+#' @param statements Character. The display statements to be fetched.
+#' Can return more than one model entity provided they are defined
+#' over the same indexing sets (See Details.)
+#'
+#' @return data.table containing the resulting display command
+#' in tabular form.
+#'
+#' @details As AMPL only returns one table, the operation will fail if the
+#' results of the display statements cannot be indexed over the same set.
+#' As a result, any attempt to get data from more than one set, or to get
+#' data for multiple parameters with a different number of indexing sets
+#' will fail.
+#'
+#' @importFrom data.table rbindlist
+#' @export
+display <- function(ampl, entity) {
+  e <- call_python(ampl, "getData", entity)
+  dt <- amplpy$DataFrame$toList(e)
+  if (e$getNumCols() == 1) {
+    return(dt[[1]] %>% unlist)
+  }
+  data.table::rbindlist(dt)
+}
+
+#' @export
+get_data <- function(ampl, entity) {
+  dt <- display(ampl, entity)
+  e <- call_python(ampl, "getEntity", entity)
+  names(dt) <- if (e$isScalar()) {
+    entity
+  } else {
+    c(e$getIndexingSets(), entity)
+  }
+  dt
+}
+
+#' @export
+get_names_sets <- function(ampl) {
+  .get_names(ampl, "_SETS")
+}
+
+#' @export
+get_names_params <- function(ampl) {
+  .get_names(ampl, "_PARS")
+}
+
+#' @export
+get_names_vars <- function(ampl) {
+  .get_names(ampl, "_VARS")
+}
+
+.get_names <- function(ampl, entity) {
+  stopifnot(entity %in% names(entity_names))
+  dt <- display(ampl, entity)
+  names(dt) <- as.character(entity_names[entity])
+  dt
+}
+
+entity_names <- list(
+  "_SETS" = "Sets",
+  "_PARS" = "Parameters",
+  "_VARS" = "Variables",
+  "_CONS" = "Constraints",
+  "_OBJS" = "Objectives",
+  "_PROBS" = "Problem Names",
+  "_ENVS" = "Environments",
+  "_FUNCS" = "User-Defined Functions")
+
 #' @export
 get_names_all <- function(ampl,
-                               entity_type = c("Sets", "Parameters", "Variables")) {
-  stopifnot(entity_type %in% c("Sets", "Parameters", "Variables"))
+                          entity_type = c("Sets", "Parameters", "Variables",
+                                          "Constraints", "Objectives")) {
+  stopifnot(entity_type %in% as.character(entity_names))
 
-  entity_list <- lapply(entity_type, function(x) {
-    call_python(ampl, sprintf("get%s", x)) %>% reticulate::iterate()
-  })
+  entity_list <- lapply(reverse_list_lookup(entity_names, entity_type),
+                        function(x) .get_names(ampl, x))
   names(entity_list) <- entity_type
-
-  purrr::map(entity_list, function(x) {purrr::map_chr(x, `[[`, 1)})
+  entity_list
 }
 
 
