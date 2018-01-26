@@ -146,7 +146,7 @@ display <- function(ampl, entity) {
   e <- call_python(ampl, "getData", entity)
   dt <- amplpy$DataFrame$toList(e)
   if (e$getNumCols() == 1) {
-    return(dt[[1]] %>% unlist)
+    return(dt %>% unlist %>% unname)
   }
   data.table::rbindlist(dt)
 }
