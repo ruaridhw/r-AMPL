@@ -190,7 +190,6 @@ get_names_vars <- function(ampl) {
 .get_names <- function(ampl, entity) {
   stopifnot(entity %in% names(entity_names))
   dt <- display(ampl, entity)
-  names(dt) <- as.character(entity_names[entity])
   dt
 }
 
