@@ -9,6 +9,7 @@
 #' @export
 set_option <- function(ampl, name, value) {
   call_python(ampl, "setOption", name, value)
+  ampl
 }
 
 #' Set Solver
@@ -21,6 +22,7 @@ set_option <- function(ampl, name, value) {
 #' @export
 set_solver <- function(ampl, solver_path) {
   set_option(ampl, "solver", solver_path)
+  ampl
 }
 
 #' Read
@@ -97,6 +99,7 @@ read_data <- function(ampl, filename, cd = TRUE) {
 #' @export
 evaluate <- function(ampl, amplstatements) {
   call_python(ampl, "eval", amplstatements)
+  ampl
 }
 
 #' Use Objective
@@ -118,60 +121,17 @@ use_objective <- function(ampl, objective) {
 #' @export
 solve_model <- function(ampl) {
   call_python(ampl, "solve")
+  ampl
 }
 
-#' Display
-#'
-#' Low-level function equivalent to the AMPL call
-#'
-#' `display ds1, ..., dsn;`
-#'
-#' where `ds1, ..., dsn` are given as the parameter `statements` here.
-#'
-#' @inheritParams read
-#' @param statements Character. The display statements to be fetched.
-#' Can return more than one model entity provided they are defined
-#' over the same indexing sets (See Details.)
-#'
-#' @return data.table containing the resulting display command
-#' in tabular form.
-#'
-#' @details As AMPL only returns one table, the operation will fail if the
-#' results of the display statements cannot be indexed over the same set.
-#' As a result, any attempt to get data from more than one set, or to get
-#' data for multiple parameters with a different number of indexing sets
-#' will fail.
-#'
-#' @importFrom data.table rbindlist
+#' @importFrom purrr map
 #' @export
-display <- function(ampl, entity) {
-  e <- call_python(ampl, "getData", entity)
-  dt <- amplpy$DataFrame$toList(e)
-  if (e$getNumCols() == 1) {
-    return(dt %>% unlist %>% unname)
-  }
-  data.table::rbindlist(dt)
-}
-
-#' @export
-get_entity <- function(ampl, entity) {
-  dt <- display(ampl, entity)
-  e <- call_python(ampl, "getEntity", entity)
-  names(dt) <- if (e$isScalar()) {
-    entity
-  } else {
-    c(e$getIndexingSets(), entity)
-  }
-  dt
-}
-
-#' @export
-get_data <- function(ampl, entity) {
-  if (length(entity) == 1) {
-    return(get_entity(ampl, entity))
-  }
-  names(entity) <- entity
-  purrr::map(entity, ~ get_entity(ampl, .x))
+get_data_all <- function(ampl) {
+  model_names <- get_names_all(ampl, c("Parameters", "Variables",
+                                       "Constraints", "Objectives"))
+  #TODO return additional information from display using getValues
+  #     eg. bounds, reduced costs, slack, dual...
+  purrr::map(model_names, ~ get_data(ampl, .x))
 }
 
 #' @export
@@ -188,22 +148,6 @@ get_names_params <- function(ampl) {
 get_names_vars <- function(ampl) {
   .get_names(ampl, "_VARS")
 }
-
-.get_names <- function(ampl, entity) {
-  stopifnot(entity %in% names(entity_names))
-  dt <- display(ampl, entity)
-  dt
-}
-
-entity_names <- list(
-  "_SETS" = "Sets",
-  "_PARS" = "Parameters",
-  "_VARS" = "Variables",
-  "_CONS" = "Constraints",
-  "_OBJS" = "Objectives",
-  "_PROBS" = "Problem Names",
-  "_ENVS" = "Environments",
-  "_FUNCS" = "User-Defined Functions")
 
 #' @export
 get_names_all <- function(ampl,
