@@ -7,12 +7,17 @@
 #' a time, use `reset` to clear the current process
 #' instead.
 #'
-#' @param amplpy `python.builtin.module` AMPLPY module
 #' @param ampl_path Character Path to AMPL executable
 #'
-#' @importFrom reticulate import
 #' @export
-new_ampl_env <- function(amplpy = import("amplpy"),
-                         ampl_path = "/Applications/ampl") {
-  amplpy$AMPL(amplpy$Environment(ampl_path))
+ampl_env <- function(ampl_path = "/Applications/ampl") {
+  ampl <- amplpy$AMPL(amplpy$Environment(ampl_path))
+  .globals$sessions <- c(.globals$sessions, ampl)
+  ampl
+}
+
+close_ampl_sessions <- function() {
+  if (!is.null(.globals$sessions)) {
+    lapply(.globals$sessions, call_python, "close")
+  }
 }
