@@ -2,8 +2,10 @@
 #' @param attribute Attribute/Method etc of `python_module`
 #' @param ... Arguments passed to `attribute`
 #'
+#' @importFrom reticulate py_validate_xptr
 #' @noRd
 call_python <- function(python_module, attribute, ...) {
+  py_validate_xptr(python_module)
   do.call(python_module[[attribute]], list(...))
 }
 
