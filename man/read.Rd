@@ -6,16 +6,16 @@
 \alias{read_data}
 \title{Read}
 \usage{
-read(ampl, fileName, cd = TRUE)
+read(ampl, filename, cd = TRUE)
 
-read_model(ampl, fileName, cd = TRUE)
+read_model(ampl, filename, cd = TRUE)
 
-read_data(ampl, fileName, cd = TRUE)
+read_data(ampl, filename, cd = TRUE)
 }
 \arguments{
 \item{ampl}{\code{amplpy.ampl.AMPL} object}
 
-\item{fileName}{Full path to the file.}
+\item{filename}{Full path to the file.}
 
 \item{cd}{Logical indicating whether to run the file
 in its directory to allow for relative path names.
