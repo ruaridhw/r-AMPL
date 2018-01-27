@@ -37,7 +37,7 @@ set_solver <- function(ampl, solver_path) {
 #' the file the interpreter is put back to "model" mode.
 #'
 #' @param ampl `amplpy.ampl.AMPL` object
-#' @param fileName Full path to the file.
+#' @param filename Full path to the file.
 #' @param cd Logical indicating whether to run the file
 #' in its directory to allow for relative path names.
 #' `FALSE` will cause AMPL to `read` in its current working
@@ -47,13 +47,14 @@ set_solver <- function(ampl, solver_path) {
 #'
 #' @name read
 #' @export
-read <- function(ampl, fileName, cd = TRUE) {
+read <- function(ampl, filename, cd = TRUE) {
   if (cd) {
     pwd <- display(ampl, "_cd")
     call_python(ampl, "cd", dirname(filename))
     on.exit(call_python(ampl, "cd", pwd))
   }
-  call_python(ampl, "read", fileName)
+  call_python(ampl, "read", filename)
+  ampl
 }
 
 #' @rdname read
@@ -62,13 +63,14 @@ read_model <- read
 
 #' @rdname read
 #' @export
-read_data <- function(ampl, fileName, cd = TRUE) {
+read_data <- function(ampl, filename, cd = TRUE) {
   if (cd) {
     pwd <- display(ampl, "_cd")
     call_python(ampl, "cd", dirname(filename))
     on.exit(call_python(ampl, "cd", pwd))
   }
-  call_python(ampl, "readData", fileName)
+  call_python(ampl, "readData", filename)
+  ampl
 }
 
 
