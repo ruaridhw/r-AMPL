@@ -54,6 +54,8 @@ read <- function(ampl, filename, cd = TRUE) {
     pwd <- display(ampl, "_cd")
     call_python(ampl, "cd", dirname(filename))
     on.exit(call_python(ampl, "cd", pwd))
+  } else {
+    filename <- normalizePath(filename)
   }
   call_python(ampl, "read", filename)
   ampl
@@ -70,6 +72,8 @@ read_data <- function(ampl, filename, cd = TRUE) {
     pwd <- display(ampl, "_cd")
     call_python(ampl, "cd", dirname(filename))
     on.exit(call_python(ampl, "cd", pwd))
+  } else {
+    filename <- normalizePath(filename)
   }
   call_python(ampl, "readData", filename)
   ampl
