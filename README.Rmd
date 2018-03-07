@@ -28,17 +28,69 @@ devtools::install_github("ruaridhw/r-AMPL")
 ```
 
 As this package relies on the `amplpy` API you will need
-a Python installation and the required package:
+a Python installation and the required package.
+
+You can check if you have Python installed by opening a Terminal
+and running:
+
+```{bash}
+python -V
+```
+
+If this doesn't print a Python version, you will need to install it
+first and then run:
 
 ```{bash pip-install, eval=FALSE}
-brew install python
 pip install amplpy
 ```
 
-## Example
+You can obviously run this with Anaconda or a Python installation other
+than the system default.
 
-This is a basic example which shows you how to solve a common problem:
+## Usage
+
+This is a basic example which shows you how to solve a common problem.
+
+First, start an AMPL environment. The default path is `/Applications/ampl`
+and assumes you have an AMPL binary installed here.
+
+```{r}
+library(AMPL)
+ampl <- ampl_env()
+```
+
+Next, we will point to the location of the model and data files.
+This package includes the AMPL book's example models so we'll use its "steel"
+model:
+
+```{r}
+model_file <- system.file("models/steel.mod", package = "AMPL")
+data_file <- system.file("models/steel.dat", package = "AMPL")
+```
+
+Finally, run the model:
 
 ```{r example}
-## basic example code
+ampl <- set_solver(ampl, "/Applications/ampl/cplex")
+ampl <- read_model(ampl, model_file)
+ampl <- read_data(ampl, data_file)
+ampl <- solve_model(ampl)
+ampl$close()
+```
+
+Using the `magrittr` pipe to chain commands, this can be executed without
+continuously repeating assignment:
+
+```{r}
+ampl <- ampl_env() %>%
+  set_solver("/Applications/ampl/cplex") %>%
+  read_model(model_file) %>%
+  read_data(data_file) %>%
+  solve_model()
+steel_results <- get_data_all(ampl)
+ampl$close()
+
+steel_results$Parameters$market
+steel_results$Variables
+steel_results$Objectives
 ```
