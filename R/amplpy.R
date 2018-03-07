@@ -11,6 +11,11 @@
 #'
 #' @export
 ampl_env <- function(ampl_path = "/Applications/ampl") {
+  if (grepl("AMPLDev.app", ampl_path)) {
+    curr_dir <- getwd()
+    setwd(ampl_path)
+    on.exit(setwd(curr_dir), add = TRUE)
+  }
   ampl <- amplpy$AMPL(amplpy$Environment(ampl_path))
   .globals$sessions <- c(.globals$sessions, ampl)
   ampl
