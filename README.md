@@ -86,3 +86,37 @@ steel_results$Objectives
 #> Total_Profit 
 #>       192000
 ```
+
+### Additional Info
+
+**Configure Python**
+
+If you installed `amplpy` using a Python installation other than the system default, such as `conda`, you can specify which version to use with a command similar to the following prior to loading `AMPL`:
+
+``` r
+reticulate::use_python("/Users/username/anaconda3/envs/my_env/bin/python")
+```
+
+**Configure AMPL**
+
+The default `ampl` binary location is `/Applications/ampl` however if you have AMPLDev installed, you can use this binary instead:
+
+``` r
+ampl <- ampl_env("/Applications/AMPLDev.app/Contents/Resources/AMPL")
+```
+
+If you do this, there are a couple of steps to be aware of:
+
+-   The AMPLDev binary must be licensed correctly otherwise R will crash. (In the future, this package will check this ahead of time and throw a warning). You can check this yourself by running the following in a Terminal:
+
+    ``` bash
+    cd /Applications/AMPLDev.app/Contents/Resources/AMPL
+    ampl --version
+    #> AMPL Version 20161231 (Darwin 10.8.0 x86_64)
+    ```
+
+    You cannot shortcut this step without the `cd` command due to OptiRisk's License Manager.
+
+    If this doesn't work, ensure that the file `LICENSE.KEY` appears in both the *Resources* and *AMPL* directories.
+
+-   Any paths inside your AMPL model files will need to be absolute paths rather than relative paths. The AMPL environment runs from inside the AMPLDev app so relative file paths will be evaluated against this directory which is almost certainly not the user's intention.
