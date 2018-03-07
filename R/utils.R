@@ -5,7 +5,7 @@
 #' @importFrom reticulate py_validate_xptr
 #' @noRd
 call_python <- function(python_module, attribute, ...) {
-  py_validate_xptr(python_module)
+  #py_validate_xptr(python_module)
   do.call(python_module[[attribute]], list(...))
 }
 
@@ -37,3 +37,7 @@ reverse_list_lookup_n <- function(lookup, x) {
 extract_set_expr <- function(expr) {
   stringr::str_match(expr, .set_expr_re)[,2]
 }
+
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
