@@ -16,7 +16,8 @@ cache:
 # Adapt as necessary starting from here
 
 environment:
-  - PYTHON: "C:\\Python36-x64"
+  matrix:
+    - PYTHON: "C:\\Python36-x64"
 
 build_script:
   - "%PYTHON%\\python.exe -m pip install numpy amplpy"
