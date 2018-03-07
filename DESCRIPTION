@@ -6,7 +6,7 @@ Authors@R: person("Ruaridh", "Williamson", email = "ruaridh.williamson@gmail.com
     role = c("aut", "cre"))
 Description: Provides convenience wrappers around the Python package amplpy
   using reticulate.
-Imports: reticulate, data.table, stringr, magrittr
+Imports: reticulate, data.table, stringr, magrittr, purrr
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
